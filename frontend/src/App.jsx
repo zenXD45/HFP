@@ -68,7 +68,7 @@ function App() {
           </svg>
         </div>
         <div>
-          <div className="header-title">CardioGuard</div>
+          <div className="header-title">HFP</div>
           <div className="header-subtitle">Heart Failure Risk Analysis</div>
         </div>
         <div style={{ marginLeft: 'auto' }}>

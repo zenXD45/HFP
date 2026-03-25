@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>❤️ CardioGuard: Heart Failure Prediction App</h1>
+  <h1>❤️ HFP: Heart Failure Prediction App</h1>
   <p><i>A full-stack machine learning application for analyzing cardiovascular risk based on patient vitals and health indicators.</i></p>
 </div>
 
@@ -7,7 +7,7 @@
 
 ## 📖 Introduction & Working of the App
 
-**CardioGuard** is a robust web application designed to assess the likelihood of heart failure in patients using a trained Machine Learning model. The app receives various physiological inputs (such as Age, Blood Pressure, Cholesterol, ECG results, etc.), processes them through a **Random Forest Classification Model**, and presents a detailed, visually appealing risk analysis report to the user.
+**HFP** is a robust web application designed to assess the likelihood of heart failure in patients using a trained Machine Learning model. The app receives various physiological inputs (such as Age, Blood Pressure, Cholesterol, ECG results, etc.), processes them through a **Random Forest Classification Model**, and presents a detailed, visually appealing risk analysis report to the user.
 
 ### **How it Works (User Flow):**
 1. **Data Entry (Dashboard):** The user enters patient demographics, vital signs, and ECG/stress test results via an intuitive, glassmorphic UI.
