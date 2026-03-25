@@ -1,0 +1,6 @@
+{
+  "appId": "com.hfp.app",
+  "appName": "hfp-mobile",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

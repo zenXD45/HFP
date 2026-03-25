@@ -1,0 +1,8 @@
+ANDROID_HOME is 
+
+ERROR: JAVA_HOME is set to an invalid directory: /home/zen/Desktop/HFP/jdk-17.0.2
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation.
+
+Gradle failed with code 1
