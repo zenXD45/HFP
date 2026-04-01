@@ -1,12 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Sun, Moon } from 'lucide-react';
 import DashboardScreen from './screens/DashboardScreen';
 import ResultsScreen from './screens/ResultsScreen';
+
+const LoadingStages = () => {
+  const [stage, setStage] = useState(0);
+  const stages = ['Parsing Patient Data...', 'Evaluating ECG Results...', 'Running ML Model...'];
+  useEffect(() => {
+    const int = setInterval(() => { setStage(s => (s + 1) % stages.length) }, 500);
+    return () => clearInterval(int);
+  }, []);
+  return (
+    <div style={{ textAlign: 'center', marginTop: 24, height: 40 }}>
+      <AnimatePresence mode="wait">
+        <motion.p key={stage} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }} style={{ color: 'var(--primary)', fontWeight: 600, margin: 0 }}>
+          {stages[stage]}
+        </motion.p>
+      </AnimatePresence>
+      <p style={{ color: 'var(--text-dim)', fontSize: '0.8rem', marginTop: 4 }}>Simulating AI analysis</p>
+    </div>
+  );
+};
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('dashboard');
   const [formData, setFormData] = useState({});
   const [predictionResult, setPredictionResult] = useState(null);
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
   const pageVariants = {
     initial: { opacity: 0, y: 12, scale: 0.98 },
@@ -71,7 +101,31 @@ function App() {
           <div className="header-title">HFP</div>
           <div className="header-subtitle">Heart Failure Risk Analysis</div>
         </div>
-        <div style={{ marginLeft: 'auto' }}>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+           <motion.button
+             type="button"
+             onClick={toggleTheme}
+             whileTap={{ scale: 0.9 }}
+             style={{ 
+               background: 'rgba(255,255,255,0.06)', 
+               border: '1px solid rgba(255,255,255,0.08)', 
+               width: 36, height: 36, borderRadius: 10,
+               color: 'var(--text-muted)', cursor: 'pointer',
+               display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'center'
+             }}
+           >
+             <AnimatePresence mode="wait">
+               {theme === 'dark' ? (
+                 <motion.div key="sun" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                   <Sun size={18} />
+                 </motion.div>
+               ) : (
+                 <motion.div key="moon" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.2 }}>
+                   <Moon size={18} color="var(--text-main)" />
+                 </motion.div>
+               )}
+             </AnimatePresence>
+           </motion.button>
            {currentScreen === 'results' && (
              <motion.button 
                onClick={handleBack} 
@@ -107,15 +161,26 @@ function App() {
             variants={pageVariants}
             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh' }}
           >
-            <div className="loading-spinner"></div>
-            <p className="loading-text">Analyzing cardiac data...</p>
-            <p style={{ color: 'var(--text-dim)', fontSize: '0.8rem', marginTop: 8 }}>Running ML model prediction</p>
+            <svg width="120" height="60" viewBox="0 0 120 60" style={{ filter: 'drop-shadow(0 0 8px var(--primary-glow))' }}>
+               <motion.path
+                 d="M 10 30 L 30 30 L 40 10 L 55 50 L 70 30 L 110 30"
+                 fill="none"
+                 stroke="var(--primary)"
+                 strokeWidth="4"
+                 strokeLinecap="round"
+                 strokeLinejoin="round"
+                 initial={{ pathLength: 0, opacity: 0 }}
+                 animate={{ pathLength: 1, opacity: 1 }}
+                 transition={{ duration: 1.2, repeat: Infinity, ease: "linear" }}
+               />
+            </svg>
+            <LoadingStages />
           </motion.div>
         )}
 
         {currentScreen === 'results' && (
            <motion.div key="results" initial="initial" animate="in" exit="out" variants={pageVariants} transition={{ type: 'spring', stiffness: 260, damping: 28 }}>
-            <ResultsScreen result={predictionResult} onBack={handleBack}/>
+            <ResultsScreen result={predictionResult} formData={formData} onBack={handleBack} theme={theme} />
            </motion.div>
         )}
       </AnimatePresence>

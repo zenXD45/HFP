@@ -1,13 +1,46 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle, AlertTriangle, FileText, Heart, Zap, Shield, ArrowLeft } from 'lucide-react';
+import { CheckCircle, AlertTriangle, FileText, Heart, Zap, Shield, ArrowLeft, Activity } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from 'recharts';
 
-const ResultsScreen = ({ result, onBack }) => {
+const AnimatedCounter = ({ value, color }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const end = parseInt(value, 10);
+    if (start === end || end === 0) {
+      setCount(end);
+      return;
+    }
+    const duration = 1200;
+    const incrementTime = Math.abs(Math.floor(duration / end));
+
+    const timer = setInterval(() => {
+      start += 1;
+      setCount(start);
+      if (start === end) clearInterval(timer);
+    }, incrementTime);
+    return () => clearInterval(timer);
+  }, [value]);
+
+  return <span style={{ fontSize: '2.2rem', fontWeight: 800, color: color, lineHeight: 1, textShadow: `0 0 12px ${color}40` }}>{count}%</span>;
+};
+
+const ResultsScreen = ({ result, formData, onBack, theme }) => {
 
   const isHighRisk = result?.riskLevel === 'High Risk';
   const probability = result?.probability || 0;
+  
+  const radarData = [
+    { subject: 'Age', A: formData?.age || 0, fullMark: 100 },
+    { subject: 'Heart Rate', A: formData?.maxHR || 0, fullMark: 220 },
+    { subject: 'BP', A: formData?.restingBP || 0, fullMark: 200 },
+    { subject: 'Chol.', A: formData?.cholesterol || 0, fullMark: 400 },
+    { subject: 'Fasting BS', A: formData?.fastingBS === 1 ? 100 : 0, fullMark: 100 },
+  ];
   
   // Colors based on risk
   const accentColor = isHighRisk ? '#F87171' : '#34D399';
@@ -27,7 +60,11 @@ const ResultsScreen = ({ result, onBack }) => {
     if (buttons) buttons.style.display = 'none';
 
     try {
-      const canvas = await html2canvas(element, { scale: 2, useCORS: true, backgroundColor: '#0B0F1A' });
+      const canvas = await html2canvas(element, { 
+        scale: 2, 
+        useCORS: true, 
+        backgroundColor: theme === 'light' ? '#F8FAFC' : '#0B0F1A' 
+      });
       const imgData = canvas.toDataURL('image/png');
       
       const pdf = new jsPDF({
@@ -95,14 +132,14 @@ const ResultsScreen = ({ result, onBack }) => {
             display: 'flex', flexDirection: 'column', 
             alignItems: 'center', justifyContent: 'center'
           }}>
-            <motion.span 
-              style={{ fontSize: '2.2rem', fontWeight: 800, color: accentColor, lineHeight: 1 }}
+            <motion.div 
+              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.7, type: 'spring' }}
             >
-              {probability}%
-            </motion.span>
+              <AnimatedCounter value={probability} color={accentColor} />
+            </motion.div>
             <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', fontWeight: 600, marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Risk Score
             </span>
@@ -131,6 +168,32 @@ const ResultsScreen = ({ result, onBack }) => {
             ? "Elevated cardiac risk detected. Please consult a cardiologist for a comprehensive evaluation."
             : "Your cardiac risk profile appears favorable. Continue maintaining a healthy lifestyle."}
         </motion.p>
+      </motion.div>
+
+      {/* Radar Chart Card */}
+      <motion.div 
+        className="glass-card"
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.4 }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+          <Activity size={16} style={{ color: 'var(--primary)' }} />
+          <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>Risk Factors Radar</span>
+        </div>
+        <div style={{ width: '100%', height: 260 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
+              <PolarGrid stroke="rgba(129, 140, 248, 0.2)" />
+              <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--text-dim)', fontSize: 11 }} />
+              <Tooltip 
+                contentStyle={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--bg-card-border)', borderRadius: 'var(--radius-md)', color: 'var(--text-main)', backdropFilter: 'blur(12px)' }}
+                itemStyle={{ color: accentColor, fontWeight: 'bold' }}
+              />
+              <Radar name="Patient Value" dataKey="A" stroke={accentColor} fill={accentColor} fillOpacity={0.4} />
+            </RadarChart>
+          </ResponsiveContainer>
+        </div>
       </motion.div>
 
       {/* Risk Bar Detail Card */}

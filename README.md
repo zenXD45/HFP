@@ -18,20 +18,28 @@
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Tools Explained
 
-### **Frontend**
-- **Framework:** React 19 (via Vite)
-- **Styling:** Vanilla CSS (App.css & index.css) featuring a custom Glassmorphism UI, Responsive Design, and CSS Variables for dynamic theming.
-- **Animations:** `framer-motion` for smooth, spring-based micro-interactions, layout transitions, and SVG chart animations.
-- **Icons:** `lucide-react` for clean, modern SVG iconography.
-- **Utilities:** `html2canvas` & `jspdf` for taking a snapshot of the results and exporting them as a high-quality PDF.
+Here is a detailed breakdown of the technologies powering this application and why they were chosen, explained simply:
 
-### **Backend**
-- **Framework:** FastAPI (Python)
-- **Machine Learning:** `scikit-learn` (v1.6.1), `pandas` for dataframe manipulation, and `joblib` for secure and fast model loading.
-- **Server:** `uvicorn` as the ASGI web server.
-- **Data Validation:** `pydantic` for strict type checking of the incoming JSON payloads.
+### 🎨 **Frontend (What the User Sees)**
+- **React 19 (via Vite):** The core framework used to build the user interface. React allows us to create interactive, dynamic screens. We use Vite as the build tool because it compiles the code incredibly fast, making the development process seamless.
+- **Vanilla CSS (Glassmorphism & Theming):** Instead of tying the app to heavy CSS frameworks, we use pure CSS to create the beautiful, frosted-glass ("glassmorphism") aesthetic. It also controls the seamless, animated transitions between the **Light and Dark Modes**.
+- **Framer Motion:** A powerful animation library for React. This is the magic behind the smooth sliding panels in the 3-step wizard, the glowing "breathing" background, the dynamic EKG heartbeat loading screen, and the counting number animations.
+- **Recharts:** An intuitive charting library used to generate the **Risk Factors Radar Chart** on the results page. It takes the patient's distinct data points (like Cholesterol and Blood Pressure) and plots them on an easy-to-read web graph so users can immediately visually identify their biggest risk factors.
+- **Lucide React:** A collection of clean, modern icons (like the Sun/Moon toggle, heart, and user symbols) used throughout the dashboard.
+- **html2canvas & jsPDF:** These dual utilities work together seamlessly to allow users to click a button, take a high-quality snapshot of their final diagnostic screen, and instantly download it as a formatted PDF report.
+
+### ⚙️ **Backend (The Brain & AI/ML Model)**
+- **FastAPI (Python):** The lightning-fast backend web server framework. It sits waiting to receive patient data via an API endpoint, processes it, and securely returns the exact risk levels to the frontend.
+- **Scikit-Learn:** The Python machine learning library that houses our core intelligence: the **Random Forest Classification Model**. It executes complex logic against thousands of historical data points to predict the precise statistical probability of heart failure.
+- **Pandas:** A powerful data structuring tool used to organize and format the raw incoming patient payload perfectly before feeding it into the AI model.
+- **Joblib:** An essential utility used to securely and rapidly unpackage our pre-trained AI model file (`.pkl`) into the server's memory the moment the backend boots up.
+- **Pydantic:** A strict security guard that meticulously checks all incoming JSON data from the website (ensuring age is a number, exercise angina is a valid string, etc.) before the AI model ever handles it.
+- **Uvicorn:** The asynchronous engine that runs our FastAPI server and tirelessly listens for web requests.
+
+### 📱 **Mobile App Engine**
+- **Capacitor (by Ionic):** A brilliant cross-platform runtime that takes our compiled web code (`HTML, CSS, JS`) and wraps it into a fully native web-view. Thanks to Capacitor, the very same codebase that spins up the website serves dynamically as a native, installable **Android App (APK)**!
 
 ---
 
